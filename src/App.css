@@ -1,0 +1,212 @@
+@import url("./styles/pure-black.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 确保样式优先级和一致性 */
+html {
+  @apply bg-white dark:bg-gray-800;
+  transition: background-color 0.2s ease-in-out;
+}
+
+body {
+  @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  margin: 0;
+  padding: 0;
+}
+
+/* 根容器确保填满屏幕 */
+#root {
+  min-height: 100vh;
+  @apply bg-white dark:bg-gray-800;
+}
+
+/* 页面过渡动画 */
+.page-transition {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 主题切换平滑过渡 */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* 滚动条样式 */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(209 213 219) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(209 213 219);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(156 163 175);
+}
+
+/* 隐藏滚动条 - 兼容所有浏览器 */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* 暗色模式滚动条 */
+.dark .scrollbar-thin {
+  scrollbar-color: rgb(75 85 99) transparent;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(75 85 99);
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(107 114 128);
+}
+
+/* 搜索结果高亮动画 */
+@keyframes searchHighlight {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.1);
+  }
+}
+
+/* 当前活跃搜索结果的高亮样式 */
+.search-highlight-active {
+  animation: searchHighlight 0.6s ease-in-out, pulseGlow 2s ease-in-out infinite;
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+  border: 1px solid #f97316;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3),
+              0 0 0 2px rgba(249, 115, 22, 0.1);
+  position: relative;
+  z-index: 10;
+}
+
+/* 暗色模式下的当前活跃搜索结果样式 */
+.dark .search-highlight-active {
+  background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%);
+  border: 1px solid #f97316;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.5),
+              0 0 0 2px rgba(249, 115, 22, 0.2);
+  color: #fff;
+}
+
+.search-highlight-active::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #f97316, #ea580c, #dc2626, #ea580c, #f97316);
+  background-size: 400% 400%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: gradientShift 3s ease infinite;
+  opacity: 0.3;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 普通搜索结果的高亮样式 */
+.search-highlight {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.search-highlight:hover {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  border-color: rgba(245, 158, 11, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+/* 暗色模式下的普通搜索结果样式 */
+.dark .search-highlight {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fff;
+}
+
+.dark .search-highlight:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: rgba(245, 158, 11, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+/* 文本查看器优化 */
+.virtualized-text-viewer {
+  font-feature-settings: "liga" 0, "kern" 1;
+  text-rendering: optimizeLegibility;
+}
+
+/* 行号样式优化 */
+.line-number {
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+/* dat.GUI 样式自定义 */
+.dg li:not(.folder) input {
+  line-height: 12px !important;
+}
+
+.dg select {
+  background-color: transparent !important;
+}

@@ -1,0 +1,60 @@
+{
+  "name": "@dataset-viewer/plugin-cad",
+  "version": "0.1.4",
+  "description": "CAD file viewer plugin for Data Viewer",
+  "main": "dist/index.cjs.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "dataset-viewer",
+    "plugin",
+    ".cad",
+    ".dwg",
+    ".dxf",
+    "autocad"
+  ],
+  "author": "DatasetViewer Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datasetviewer/cad-plugin.git"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "terser": "^5.43.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-static-copy": "^3.1.2"
+  },
+  "scripts": {
+    "build": "vite build && npm run build:types",
+    "build:types": "tsc --emitDeclarationOnly",
+    "dev": "vite build --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@dataset-viewer/sdk": "workspace:*",
+    "@mlightcad/cad-simple-viewer": "1.0.18",
+    "@mlightcad/data-model": "1.2.7",
+    "@mlightcad/libredwg-converter": "^3.0.8",
+    "@mlightcad/libredwg-web": "^0.2.1"
+  }
+}

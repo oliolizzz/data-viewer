@@ -1,0 +1,151 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useConnectionManager } from '../../hooks/useStorage';
+import { connectionStorage, type StoredConnection } from '../../services/connectionStorage';
+import { getStorageAdapter } from '../../services/storage/StorageClient';
+import type { ConnectionConfig, StorageClientType } from '../../services/storage/types';
+
+export default function useConnectionLogic(onConnectSuccess?: () => void) {
+  const { t } = useTranslation();
+
+  // 使用新的 Zustand hook
+  const {
+    connections,
+    currentConnection,
+    connectionStatus,
+    connectionError,
+    connectWithConfig,
+    isConnected,
+  } = useConnectionManager();
+
+  // 通用状态
+  const [storageType, setStorageType] = useState<StorageClientType>('webdav');
+  const [selectedStoredConnection, setSelectedStoredConnection] = useState<StoredConnection | null>(
+    null
+  );
+
+  // 通用表单数据状态 - 替换分散的单独状态
+  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+  // 保留必要的兼容性状态
+  const isPasswordFromStorage = formData.isPasswordFromStorage || false;
+
+  // 从 Zustand store 获取状态
+  const connecting = connectionStatus === 'connecting';
+  const error = connectionError || '';
+
+  // 更新表单数据的辅助函数
+  const updateFormData = (key: string, value: any) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+    setValidationErrors([]); // 清除验证错误
+  };
+
+  // 初始化表单数据
+  const initializeFormData = (type: StorageClientType) => {
+    const adapter = getStorageAdapter(type);
+    const defaultConfig = adapter.getDefaultConfig?.() || {};
+    setFormData(defaultConfig);
+    setValidationErrors([]);
+  };
+
+  const handleSelectStoredConnection = (connection: StoredConnection) => {
+    setSelectedStoredConnection(connection);
+    setValidationErrors([]);
+
+    const config = connection.config;
+    setStorageType(config.type);
+
+    // 使用 adapter 提取表单数据
+    const adapter = getStorageAdapter(config.type);
+    const extractedFormData = adapter.extractFormData?.(config) || {};
+
+    setFormData(extractedFormData);
+  };
+
+  useEffect(() => {
+    // 使用最近的连接信息预填表单，但不自动连接
+    const defaultConnection = connectionStorage.getDefaultConnection();
+    if (defaultConnection) {
+      handleSelectStoredConnection(defaultConnection);
+    }
+  }, []);
+
+  // 通用连接方法 - 使用 adapter 配置构建，移除前端验证
+  const handleConnectWithValidation = async (
+    storageType: StorageClientType,
+    formData: Record<string, any>
+  ) => {
+    setValidationErrors([]);
+
+    try {
+      const adapter = getStorageAdapter(storageType);
+
+      // 1. 使用 adapter 构建完整配置（不再做前端验证）
+      const config =
+        adapter.buildConnectionConfig?.(formData, selectedStoredConnection || undefined) ||
+        (formData as ConnectionConfig);
+
+      // 2. 直接尝试连接，让后端处理所有验证
+      const success = await connectWithConfig(config);
+      if (success) {
+        onConnectSuccess?.();
+        return;
+      } else {
+        throw new Error(t('error.connection.failed'));
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('error.connection.failed');
+      // 错误会自动设置到 Zustand store 中
+      console.error('Connection error:', errorMessage);
+    }
+  };
+
+  // 新增：使用当前表单数据连接
+  const handleConnectWithCurrentForm = async () => {
+    await handleConnectWithValidation(storageType, formData);
+  };
+
+  const handleStorageTypeChange = (type: StorageClientType) => {
+    setStorageType(type);
+    setValidationErrors([]);
+
+    // 如果当前选择的连接类型匹配新类型，保持选择状态
+    if (selectedStoredConnection && selectedStoredConnection.config.type === type) {
+      return; // 保持当前表单数据
+    }
+
+    // 清除当前选择并初始化新类型的默认表单数据
+    setSelectedStoredConnection(null);
+    initializeFormData(type);
+  };
+
+  return {
+    // 核心状态
+    storageType,
+    connecting,
+    error,
+    selectedStoredConnection,
+    formData,
+    validationErrors,
+    isPasswordFromStorage,
+
+    // 核心处理函数
+    updateFormData,
+    handleStorageTypeChange,
+    handleSelectStoredConnection,
+    handleConnectWithCurrentForm,
+    handleFormDataChange: (updates: Partial<Record<string, any>>) => {
+      setFormData(prev => ({ ...prev, ...updates }));
+    },
+
+    // 保留的状态设置函数（用于外部调用）
+    setStorageType,
+    setSelectedStoredConnection,
+
+    // 新增：来自 Zustand store 的状态
+    connections,
+    currentConnection,
+    isConnected,
+  };
+}

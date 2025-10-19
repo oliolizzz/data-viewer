@@ -1,0 +1,82 @@
+export const pluginManager = {
+  // 插件管理器标题和标签
+  'plugin.management': '插件管理',
+  'plugin.manager.title': '插件管理器',
+  'plugin.manager.installed': '已安装插件',
+  'plugin.manager.available': '插件市场',
+
+  // 插件状态
+  'plugin.status.official': '官方',
+  'plugin.status.installed': '已安装',
+
+  // 插件操作
+  'plugin.action.install': '安装',
+  'plugin.action.enable': '启用',
+  'plugin.action.disable': '禁用',
+  'plugin.action.refresh': '刷新',
+  'plugin.action.update': '更新',
+  'plugin.action.check_update': '检查更新',
+  'plugin.action.check_all_updates': '检查所有更新',
+
+  // 插件来源
+  'plugin.source.dev': '开发版',
+
+  // 插件信息
+  'plugin.info.author': '作者: {{author}}',
+  'plugin.info.supports': '支持: {{extensions}}',
+
+  // 版本更新
+  'plugin.update.up_to_date': '已是最新版本',
+
+  // 操作状态
+
+  // 操作结果消息
+  'plugin.install.success': '插件 {{pluginId}} 安装成功',
+  'plugin.install.success_manual': '插件 {{pluginId}} 安装成功，请刷新页面或手动启用',
+  'plugin.install.failed': '安装插件失败: {{error}}',
+  'plugin.uninstall.success': '插件 {{pluginId}} 卸载成功',
+  'plugin.uninstall.failed': '卸载插件失败: {{error}}',
+  'plugin.enable.success': '插件 {{pluginId}} 启用成功',
+  'plugin.enable.failed': '启用插件失败: {{error}}',
+  'plugin.disable.success': '插件 {{pluginId}} 禁用成功',
+  'plugin.disable.failed': '禁用插件失败: {{error}}',
+  'plugin.update.success_detail': '插件 {{pluginId}} 更新成功: v{{oldVersion}} → v{{newVersion}}',
+  'plugin.update.failed_detail': '更新插件失败: {{error}}',
+  'plugin.check_update.success': '{{pluginId}} 有可用更新: v{{latestVersion}}',
+  'plugin.check_update.up_to_date': '{{pluginId}} 已是最新版本',
+  'plugin.check_update.failed': '检查更新失败: {{error}}',
+
+  // 状态消息
+  'plugin.loading': '加载中...',
+  'plugin.empty.installed': '还没有安装任何插件',
+  'plugin.empty.available': '暂无可用插件',
+
+  // 底部提示
+  'plugin.security.notice': '插件从npm registry或本地路径安装，请确保来源可信',
+  'plugin.naming.convention': '命名规范:',
+  'plugin.updates.available': '有可用更新',
+
+  // 状态提示文本
+  'plugin.status.enabled_tooltip': '已启用',
+  'plugin.status.disabled_tooltip': '已禁用',
+
+  // 按钮文本
+  'plugin.button.update': '更新',
+  'plugin.button.updating': '更新中',
+  'plugin.button.installing': '安装中',
+  'plugin.button.uninstall': '卸载',
+  'plugin.button.check_update': '检查更新',
+
+  // 描述
+  'plugin.description': '安装和管理文件查看器插件，扩展更多文件格式支持',
+
+  // 错误处理
+  'plugin.error.file_not_found': '插件文件未找到{{pluginName}}，请检查插件是否正确安装',
+  'plugin.error.invalid_format': '插件格式无效{{pluginName}}，可能是插件版本不兼容',
+  'plugin.error.execution_error': '插件执行出错{{pluginName}}，请联系插件开发者',
+  'plugin.error.dependency_error': '插件依赖缺失{{pluginName}}，请检查插件完整性',
+  'plugin.error.network_error': '网络错误{{pluginName}}，请检查网络连接后重试',
+  'plugin.error.unknown_error': '插件加载失败{{pluginName}}：{{message}}',
+  'plugin.error.load_failed': '插件加载失败，使用默认查看器',
+  'plugin.error.retry_available': '加载失败，点击重试',
+};

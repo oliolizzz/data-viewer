@@ -1,0 +1,275 @@
+import {
+  AlertTriangle,
+  Archive,
+  EyeOff,
+  File,
+  FileText,
+  Folder,
+  Loader2,
+  type LucideIcon,
+  Search,
+} from 'lucide-react';
+import type { FC } from 'react';
+import { useTranslation } from 'react-i18next';
+
+type StatusType =
+  | 'loading'
+  | 'error'
+  | 'empty'
+  | 'notFound'
+  | 'unsupported'
+  | 'hiddenFiles'
+  | 'noSearchResults'
+  | 'archiveEmpty'
+  | 'previewEmpty'
+  | 'directoryEmpty';
+
+interface StatusDisplayProps {
+  type: StatusType;
+  message: string;
+  secondaryMessage?: string;
+  icon?: LucideIcon;
+  action?: {
+    label: string;
+    onClick: () => void;
+    variant?: 'primary' | 'secondary';
+  };
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+    variant?: 'primary' | 'secondary';
+  };
+  className?: string;
+}
+
+const defaultIcons: Record<StatusType, LucideIcon> = {
+  loading: Loader2,
+  error: AlertTriangle,
+  empty: File,
+  notFound: Search,
+  unsupported: FileText,
+  hiddenFiles: EyeOff,
+  noSearchResults: Search,
+  archiveEmpty: Archive,
+  previewEmpty: Archive,
+  directoryEmpty: Folder,
+};
+
+const getIconProps = (type: StatusType) => {
+  const baseProps = 'mx-auto w-12 h-12 text-gray-400 dark:text-gray-500 mb-4';
+
+  if (type === 'loading') {
+    return `${baseProps} animate-spin`;
+  }
+
+  return baseProps;
+};
+
+export const StatusDisplay: FC<StatusDisplayProps> = ({
+  type,
+  message,
+  secondaryMessage,
+  icon,
+  action,
+  secondaryAction,
+  className = '',
+}) => {
+  const IconComponent = icon || defaultIcons[type];
+  const iconClassName = getIconProps(type);
+
+  return (
+    <div
+      className={`flex-1 flex items-center justify-center min-h-0 bg-white dark:bg-gray-800 ${className}`}
+    >
+      <div className="text-center py-12">
+        <IconComponent className={iconClassName} />
+        <p className="text-gray-500 dark:text-gray-400">{message}</p>
+        {secondaryMessage && (
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-2 whitespace-pre-line">
+            {secondaryMessage}
+          </p>
+        )}
+        {(action || secondaryAction) && (
+          <div className="mt-4 flex flex-col sm:flex-row gap-2 justify-center">
+            {action && (
+              <button
+                onClick={action.onClick}
+                className={`text-sm ${
+                  action.variant === 'primary'
+                    ? 'px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700'
+                    : 'text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300'
+                }`}
+              >
+                {action.label}
+              </button>
+            )}
+            {secondaryAction && (
+              <button
+                onClick={secondaryAction.onClick}
+                className={`text-sm ${
+                  secondaryAction.variant === 'primary'
+                    ? 'px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700'
+                    : 'text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300'
+                }`}
+              >
+                {secondaryAction.label}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 预定义的常用状态组件
+export const LoadingDisplay: FC<{
+  message?: string;
+  icon?: LucideIcon;
+  className?: string;
+}> = ({ message, icon, className }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusDisplay
+      type="loading"
+      message={message || t('status.loading')}
+      icon={icon}
+      className={className}
+    />
+  );
+};
+
+// 错误信息翻译辅助函数
+const translateErrorMessage = (error: string, t: (key: string) => string): string => {
+  // 检查是否是翻译键（以字母开头，包含点号）
+  if (error.match(/^[a-zA-Z][a-zA-Z0-9.]+$/)) {
+    return t(error);
+  }
+
+  // 否则返回原始错误信息
+  return error;
+};
+
+export const ErrorDisplay: FC<{
+  message: string;
+  onRetry?: () => void;
+  className?: string;
+}> = ({ message, onRetry, className }) => {
+  const { t } = useTranslation();
+  const translatedMessage = translateErrorMessage(message, t);
+  return (
+    <StatusDisplay
+      type="error"
+      message={translatedMessage}
+      action={
+        onRetry ? { label: t('status.retry'), onClick: onRetry, variant: 'secondary' } : undefined
+      }
+      className={className}
+    />
+  );
+};
+
+export const EmptyDisplay: FC<{
+  message: string;
+  secondaryMessage?: string;
+  className?: string;
+}> = ({ message, secondaryMessage, className }) => (
+  <StatusDisplay
+    type="empty"
+    message={message}
+    secondaryMessage={secondaryMessage}
+    className={className}
+  />
+);
+
+export const UnsupportedFormatDisplay: FC<{
+  message?: string;
+  secondaryMessage?: string;
+  className?: string;
+  onOpenAsText?: () => void;
+}> = ({ message, secondaryMessage, className, onOpenAsText }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusDisplay
+      type="unsupported"
+      message={message || t('status.unsupported.format')}
+      secondaryMessage={secondaryMessage || t('status.unsupported.download')}
+      action={
+        onOpenAsText
+          ? {
+              label: t('viewer.open.as.text'),
+              onClick: onOpenAsText,
+              variant: 'primary',
+            }
+          : undefined
+      }
+      className={className}
+    />
+  );
+};
+
+export const HiddenFilesDisplay: FC<{
+  onShowHidden: () => void;
+  className?: string;
+}> = ({ onShowHidden, className }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusDisplay
+      type="hiddenFiles"
+      message={t('status.all.files.hidden')}
+      action={{ label: t('status.show.hidden.files'), onClick: onShowHidden, variant: 'secondary' }}
+      className={className}
+    />
+  );
+};
+
+export const NoSearchResultsDisplay: FC<{
+  searchTerm: string;
+  onClearSearch: () => void;
+  className?: string;
+}> = ({ searchTerm, onClearSearch, className }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusDisplay
+      type="noSearchResults"
+      message={t('status.no.matching.files')}
+      secondaryMessage={t('status.try.different.keywords', { searchTerm })}
+      action={{ label: t('status.clear.search'), onClick: onClearSearch, variant: 'secondary' }}
+      className={className}
+    />
+  );
+};
+
+export const NoLocalResultsDisplay: FC<{
+  searchTerm: string;
+  onRemoteSearch: () => void;
+  className?: string;
+}> = ({ searchTerm, onRemoteSearch, className }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusDisplay
+      type="noSearchResults"
+      message={t('status.no.local.results')}
+      secondaryMessage={t('status.try.remote.search', { searchTerm })}
+      action={{ label: t('status.search.remote'), onClick: onRemoteSearch, variant: 'secondary' }}
+      className={className}
+    />
+  );
+};
+
+export const NoRemoteResultsDisplay: FC<{
+  searchTerm: string;
+  onClearSearch: () => void;
+  className?: string;
+}> = ({ searchTerm, onClearSearch, className }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusDisplay
+      type="noSearchResults"
+      message={t('status.no.matching.files')}
+      secondaryMessage={t('status.try.different.keywords', { searchTerm })}
+      action={{ label: t('status.clear.search'), onClick: onClearSearch, variant: 'secondary' }}
+      className={className}
+    />
+  );
+};

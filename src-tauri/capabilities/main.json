@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2/capability",
+  "identifier": "main-capability",
+  "description": "Capability for the main window with HTTP access, file system, dialog, and opener permissions",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:default",
+    "dialog:default",
+    "opener:default",
+    {
+      "identifier": "fs:allow-write-file",
+      "allow": [
+        {
+          "path": "**"
+        }
+      ]
+    },
+    {
+      "identifier": "dialog:allow-save",
+      "allow": []
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        {
+          "path": "$APPDATA/ai.stardust.dataset-viewer"
+        },
+        {
+          "path": "$APPDATA/ai.stardust.dataset-viewer/**"
+        },
+        {
+          "path": ".plugins"
+        },
+        {
+          "path": ".plugins/**"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-file",
+      "allow": [
+        {
+          "path": "$APPDATA/ai.stardust.dataset-viewer/**"
+        },
+        {
+          "path": ".plugins/**"
+        }
+      ]
+    }
+  ]
+}
